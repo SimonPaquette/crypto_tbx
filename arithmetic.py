@@ -16,20 +16,43 @@ class PolynomialArithmetic:
         return poly_str
 
     @classmethod
-    def find_multiplier(cls, field: int, multiplicand: int, product: int) -> int:
-        for multiplier in range(field):
-            if (multiplicand * multiplier) % field == product:
-                return multiplier
-        return None
-
-    @classmethod
-    def multiply(cls, field: int, polynomial: list, integer: int) -> list:
-        result = [(x * integer) % field for x in polynomial]
+    def add(cls, field: int, poly1: list, poly2: list) -> list:
+        result = [(x + y) % field for x, y in zip(poly1, poly2)]
         return result
 
     @classmethod
     def substract(cls, field: int, poly1: list, poly2: list) -> list:
         result = [(x - y) % field for x, y in zip(poly1, poly2)]
+        return result
+
+    @classmethod
+    def find_multiplier(cls, field: int, multiplicand: int, product: int) -> int:
+        for multiplier in range(field):
+            if (multiplicand * multiplier) % field == product:
+                return multiplier
+        return 1
+
+    @classmethod
+    def multiply_by_int(cls, field: int, polynomial: list, integer: int) -> list:
+        result = [(x * integer) % field for x in polynomial]
+        return result
+
+    @classmethod
+    def multiply(cls, field: int, poly1: list, poly2: list) -> list:
+
+        bits = []
+        for y_index, y in enumerate(reversed(poly2)):
+            bit = (
+                [0] * (len(poly2) - y_index - 1)
+                + [(x * y) % field for x in poly1]
+                + [0] * y_index
+            )
+            bits.append(bit)
+
+        result = bits[0]
+        for bit in bits[1:]:
+            result = cls.add(field, result, bit)
+
         return result
 
     @classmethod
@@ -55,20 +78,24 @@ class PolynomialArithmetic:
         print()
 
     @classmethod
-    def div_pipeline(cls, field: int, dividend: list, divisor: list) -> None:
+    def div_pipeline(
+        cls, field: int, dividend: list, divisor: list, calc_gcd: bool = True
+    ) -> None:
 
         if len(dividend) == 1:
             print("GCD =", cls.list_to_poly(divisor))
             return
 
         if len(dividend) == len(divisor) - 1:
+            if not calc_gcd:
+                return
             print("-------------------------------------")
-            cls.div_pipeline(field, divisor, dividend)
+            cls.div_pipeline(field, divisor, dividend, calc_gcd)
             return
 
         multiplier = cls.find_multiplier(field, divisor[0], dividend[0])
         power = len(dividend) - len(divisor)
-        multiplication = cls.multiply(field, divisor, multiplier)
+        multiplication = cls.multiply_by_int(field, divisor, multiplier)
         multiplication += [0] * power
         substraction = cls.substract(field, dividend, multiplication)
         substraction = substraction[1:]
@@ -77,7 +104,7 @@ class PolynomialArithmetic:
             multiplier, power, divisor, dividend, multiplication, substraction
         )
 
-        cls.div_pipeline(field, substraction, divisor)
+        cls.div_pipeline(field, substraction, divisor, calc_gcd)
 
 
 class NumeralArithmetic:
@@ -136,11 +163,3 @@ class NumeralArithmetic:
         inverse = last_step[3] % last_step[0]
         print(f"{last_step[2]}^-1 = {inverse} mod {last_step[0]}")
         print()
-
-
-FIELD = 101
-DIVISOR = [1, 97, 40, 38]
-DIVIDEND = [1, 88, 73, 83, 51, 67]
-
-PolynomialArithmetic.div_pipeline(FIELD, DIVIDEND, DIVISOR)
-NumeralArithmetic.find_inverse(3, 5)

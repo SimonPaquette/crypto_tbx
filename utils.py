@@ -75,3 +75,30 @@ def primitive_roots(modulo: int) -> None:
             pass
 
     print(f"\nThere is {len(roots)} Primitve roots of {modulo}: {roots}")
+
+
+def n_test_miller_rabin(bits: int) -> int:
+    return 0.5 * math.log(2**bits)
+
+
+def discrete_log(base: int, value: int, modulo: int):
+    N = None
+    if not N:
+        N = 1 + int(math.sqrt(modulo))
+
+    # initialize baby_steps table
+    baby_steps = {}
+    baby_step = 1
+    for r in range(N + 1):
+        baby_steps[baby_step] = r
+        baby_step = baby_step * base % modulo
+
+    # now take the giant steps
+    giant_stride = pow(base, (modulo - 2) * N, modulo)
+    giant_step = value
+    for q in range(N + 1):
+        if giant_step in baby_steps:
+            return q * N + baby_steps[giant_step]
+        else:
+            giant_step = giant_step * giant_stride % modulo
+    return "No Match"
