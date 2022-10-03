@@ -1,3 +1,6 @@
+import utils
+
+
 class PolynomialArithmetic:
     @classmethod
     def list_to_poly(cls, poly: list) -> str:
@@ -150,16 +153,57 @@ class NumeralArithmetic:
         return iterations[1:]
 
     @classmethod
-    def find_inverse(cls, n: int, modulo: int) -> int:
+    def find_inverse(cls, n: int, modulo: int, pprint: bool = True) -> int:
         euclidean_step = cls.euclidean(n, modulo)
-        cls.print_euclidean(euclidean_step)
-        print("--------------------")
         ext_euclidean_step = cls.ext_euclidean(euclidean_step)
-        cls.print_ext_euclidean(ext_euclidean_step)
         last_step = ext_euclidean_step[-1]
-        print("--------------------")
-        print(f"1+{last_step[0]}(-{last_step[1]}) = {last_step[2]}({last_step[3]})")
-        print(f"1 mod {last_step[0]} = {last_step[2]}({last_step[3]})")
         inverse = last_step[3] % last_step[0]
-        print(f"{last_step[2]}^-1 = {inverse} mod {last_step[0]}")
-        print()
+        if pprint:
+            cls.print_euclidean(euclidean_step)
+            print("--------------------")
+            cls.print_ext_euclidean(ext_euclidean_step)
+            print("--------------------")
+            print(f"1+{last_step[0]}(-{last_step[1]}) = {last_step[2]}({last_step[3]})")
+            print(f"1 mod {last_step[0]} = {last_step[2]}({last_step[3]})")
+            print(f"{last_step[2]}^-1 = {inverse} mod {last_step[0]}")
+            print()
+        return inverse
+
+    @classmethod
+    def chinese_remainder(cls, M: int) -> list:
+
+        primes = utils.prime_factors(M)
+        c_val = []
+        for index1, prime1 in enumerate(primes):
+            val = 1
+            for index2, prime2 in enumerate(primes):
+                if index1 != index2:
+                    val *= prime2
+            if val % prime1 != 1:
+                inverse = NumeralArithmetic.find_inverse(val, prime1, pprint=False)
+                val *= inverse
+            c_val.append(val)
+        # print(f"PRIMES: {primes} => C VAL: {c_val}")
+        return (primes, c_val)
+
+    @classmethod
+    def to_tuple_repr(cls, M: int, num: int) -> list:
+        tuple_val = []
+        primes, _ = cls.chinese_remainder(M)
+        for prime in primes:
+            tuple_val.append(num % prime)
+        return tuple_val
+
+    @classmethod
+    def from_tuple_repr(cls, M: int, tup: list) -> int:
+        _, c_vals = cls.chinese_remainder(M)
+        num = 0
+        for index, c_val in enumerate(c_vals):
+            num += c_val * tup[index]
+        return num % M
+
+
+NumeralArithmetic.chinese_remainder(2431)
+print(NumeralArithmetic.to_tuple_repr(2431, 593))
+a = NumeralArithmetic.to_tuple_repr(2431, 1813)
+print(NumeralArithmetic.from_tuple_repr(2431, a))
