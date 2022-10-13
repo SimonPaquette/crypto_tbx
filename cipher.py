@@ -1,4 +1,5 @@
 from string import ascii_uppercase
+from sage.crypto.sbox import SBox
 
 ALPHA = [*ascii_uppercase]
 
@@ -31,3 +32,13 @@ def vigenere(plaintext: str, shift: str) -> str:
         new_letter = ALPHA[new_index]
         ciphertext += new_letter
     return ciphertext
+
+
+"""
+! check sagemath for sbox analysis
+from sage.crypto.sbox import SBox
+S = SBox(10,2,4,9,0,14,15,1,7,6,3,13,11,8,12,5)
+S.linear_approximation_table()
+S.difference_distribution_table()
+
+"""
