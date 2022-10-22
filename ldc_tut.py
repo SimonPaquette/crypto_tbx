@@ -2,6 +2,9 @@
 Cryptography using SPN cipher
 Able to encryt a binary message with tools like Sboxes, Substition layers and Transposition layers.
 """
+import json
+from random import randint
+
 import numpy as np
 
 
@@ -121,6 +124,15 @@ class SubKey:
         self.key = key
         self.length = len(key)
 
+    def __repr__(self):
+        return self.key
+
+    def __str__(self):
+        return self.key
+
+    def __getitem__(self, index):
+        return self.key[index]
+
     def xor(self, bit_val: str) -> str:
         """
         Subkey mixing with a bit string using xor operator
@@ -177,7 +189,81 @@ k2 = SubKey("0011100000011111")
 k3 = SubKey("0011101001110000")
 k4 = SubKey("0011011001100010")
 k5 = SubKey("1011101100111001")
-
 spn = SPN(sub, tran, [k1, k2, k3, k4, k5])
-msg = spn.encrypt("0000111100001111")
-print(msg)
+
+reverse_sbox = SBox_4(4, 7, 1, 10, 2, 15, 9, 8, 13, 3, 0, 12, 14, 11, 5, 6)
+reverse_layer = SubLayer(reverse_sbox, reverse_sbox, reverse_sbox, reverse_sbox)
+
+
+def extract_key_bits(
+    n_plaintexts: int, n_bits: int, deltaP_bits: str, deltaU_bits: str, output_name: str
+):
+
+    prob = {}
+    for i in range(2**n_bits):
+        prob[i] = 0
+
+    for i in range(n_plaintexts):
+
+        deltaP = SubKey(deltaP_bits)
+        deltaU = SubKey(deltaU_bits)
+
+        plain1 = _bin(i, 16)
+        plain2 = deltaP.xor(plain1)
+
+        cipher1 = spn.encrypt(plain1)
+        cipher2 = spn.encrypt(plain2)
+
+        for integer in range(2**n_bits):
+            bin_integer = _bin(integer, 16)
+            index_to_compare_with = []
+
+            random_key = ""
+            for split in range(0, 16, 4):
+                if "1" in deltaU[split : split + 4]:
+                    random_key += bin_integer[split : split + 4]
+                    index_to_compare_with.extend(range(split, split + 4))
+                else:
+                    random_key += "0000"
+            random_key = SubKey(random_key)
+
+            c1_xor = random_key.xor(cipher1)
+            c2_xor = random_key.xor(cipher2)
+
+            c1_sub = reverse_layer.substitute(c1_xor)
+            c2_sub = reverse_layer.substitute(c2_xor)
+
+            right_pair = True
+            for index, diff_bit in enumerate(deltaU):
+                if index in index_to_compare_with:
+                    if diff_bit == "1":
+                        if c1_sub[index] == c2_sub[index]:
+                            right_pair = False
+                            break
+                    else:
+                        if c1_sub[index] != c2_sub[index]:
+                            right_pair = False
+                            break
+
+            if right_pair:
+                prob[integer] += 1
+
+    max_value = 0
+    index = None
+    with open(f"{output_name}.txt", "w") as f:
+        for k, v in prob.items():
+            v = v / n_plaintexts
+            k = _bin(k, n_bits)
+
+            keys = [k[i : i + 4] for i in range(0, len(k), 4)]
+
+            f.write(f"{keys} : {v:.4f}\n")
+
+            if v > max_value:
+                max_value = v
+                index = k
+
+    print(index, max_value)
+
+
+extract_key_bits(5000, 8, "0001000000000000", "0000000001000100", "diff_car_1")
