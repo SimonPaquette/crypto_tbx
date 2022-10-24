@@ -1,6 +1,9 @@
 class FiniteField:
-    def __init__(self, elems: list):
+    def __init__(self, elems: list, mod: int = None):
         self.elems = elems
+        self.mod = mod
+        if mod:
+            print("The function with modulo is not implemented yet")
 
     def _test_closure(self, operator: str) -> bool:
         elems = self.elems
@@ -124,3 +127,4 @@ class FiniteField:
 
     def is_field(self) -> bool:
         field = self.is_integral_domain() and self._test_identity("*")
+        return field

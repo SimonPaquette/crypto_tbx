@@ -1,5 +1,4 @@
 from string import ascii_uppercase
-from sage.crypto.sbox import SBox
 
 ALPHA = [*ascii_uppercase]
 

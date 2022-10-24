@@ -109,6 +109,16 @@ class PolynomialArithmetic:
 
         cls.div_pipeline(field, substraction, divisor, calc_gcd)
 
+    @classmethod
+    def mod_irreducible(cls, poly: list, irreducible: list) -> str:
+        poly = "".join(map(str, poly))
+        irr = "".join(map(str, irreducible))
+        poly = utils._dec(poly)
+        irr = utils._dec(irr)
+        result = poly % irr
+        result = utils._bin(result, 8)
+        return result
+
 
 class NumeralArithmetic:
     @classmethod
@@ -183,7 +193,7 @@ class NumeralArithmetic:
                 inverse = NumeralArithmetic.find_inverse(val, prime1, pprint=False)
                 val *= inverse
             c_val.append(val)
-        # print(f"PRIMES: {primes} => C VAL: {c_val}")
+        print(f"PRIMES: {primes} => C VAL: {c_val}")
         return (primes, c_val)
 
     @classmethod
@@ -201,9 +211,3 @@ class NumeralArithmetic:
         for index, c_val in enumerate(c_vals):
             num += c_val * tup[index]
         return num % M
-
-
-NumeralArithmetic.chinese_remainder(2431)
-print(NumeralArithmetic.to_tuple_repr(2431, 593))
-a = NumeralArithmetic.to_tuple_repr(2431, 1813)
-print(NumeralArithmetic.from_tuple_repr(2431, a))

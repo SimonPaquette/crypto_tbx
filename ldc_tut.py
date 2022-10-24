@@ -2,8 +2,8 @@
 Cryptography using SPN cipher
 Able to encryt a binary message with tools like Sboxes, Substition layers and Transposition layers.
 """
-import json
-from random import randint
+
+__author__ = "Simon Paquette" #300044038
 
 import numpy as np
 

@@ -4,6 +4,14 @@ import numpy as np
 import pandas as pd
 
 
+def _bin(dec_val: int, length: int) -> str:
+    return format(dec_val, f"0{length}b")
+
+
+def _dec(bin_val: str) -> int:
+    return int(bin_val, 2)
+
+
 def is_prime(n: int) -> bool:
     assert n > 1
     for i in range(2, int(math.sqrt(n)) + 1):
