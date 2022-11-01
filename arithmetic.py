@@ -177,7 +177,7 @@ class NumeralArithmetic:
             print(f"1 mod {last_step[0]} = {last_step[2]}({last_step[3]})")
             print(f"{last_step[2]}^-1 = {inverse} mod {last_step[0]}")
             print()
-        return inverse
+        return int(inverse)
 
     @classmethod
     def chinese_remainder(cls, M: int) -> list:
