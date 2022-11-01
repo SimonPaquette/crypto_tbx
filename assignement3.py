@@ -1,0 +1,117 @@
+"""
+Simon Paquette
+300044038
+CSI 4108
+Assignment 3
+"""
+import random
+
+
+class Elgamal:
+    def __init__(self, prime_q: int, root: int):
+        self.prime_q = prime_q
+        self.root = root
+        self.xa = None
+        self.ya = None
+        self.k = None
+        self.K = None
+
+    def __repr__(self):
+        return str(vars(self))
+
+    def set_xa(self, xa=None):
+        if xa is not None:
+            self.xa = xa
+        else:
+            self.xa = random.randint(2, self.prime_q - 2)
+        self._set_ya()
+
+    def _set_ya(self):
+        self.ya = (self.root**self.xa) % self.prime_q
+
+    def set_k(self, k=None):
+        if k is not None:
+            self.k = k
+        else:
+            self.k = random.randint(1, self.prime_q - 1)
+        self._set_K()
+
+    def _set_K(self):
+        self.K = (self.ya**self.k) % self.prime_q
+
+    def get_private_key(self):
+        return self.xa
+
+    def get_public_key(self):
+        return (self.prime_q, self.root, self.ya)
+
+    def encrypt(self, message: int):
+        c1 = (self.root**self.k) % self.prime_q
+        c2 = (self.K * message) % self.prime_q
+        return (c1, c2)
+
+    def decrypt(self, ciphertext: tuple[int, int]):
+        c1, c2 = ciphertext
+        K = (c1**self.xa) % self.prime_q
+        M = (c2 * pow(base=K, exp=-1, mod=self.prime_q)) % self.prime_q
+        return M
+
+
+# toy_version = Elgamal(prime_q=89, root=13)
+# toy_version.set_xa()
+# toy_version.set_k(37)
+# print(toy_version)
+
+
+# cipher = toy_version.encrypt(56)
+# print("cipher:", cipher)
+# message = toy_version.decrypt(cipher)
+# print("message:", message)
+# print("public key:", toy_version.get_public_key())
+# print("private key:", toy_version.get_private_key())
+
+
+def get_n_bit_number(n_bits: int):
+    number = random.randint(2 ** (n_bits - 1), (2**n_bits) - 1)
+    # print(f"{number:b}")
+    return number
+
+
+def miller_rabin(odd_integer: int, confidence: int):
+
+    # Make sure odd integer and test>0
+    assert odd_integer % 2 == 1
+    assert confidence > 0
+
+    # Find k and q with k>=0 and q odd where n - 1 = (2^k) * (q)
+    k = 0
+    reduction = odd_integer - 1
+    while reduction % 2 == 0:
+        reduction /= 2
+        k += 1
+    q = (odd_integer - 1) // (2**k)
+
+    # Do t=confidence miller-rabin test
+    for i in range(confidence):
+        print(i)
+
+        # Select random integer a, 1 < a < n - 1
+        a = random.randint(2, odd_integer - 2)
+
+        # Test
+
+        if (a**q) % odd_integer == 1:
+            print("HELLO")
+            continue
+
+        for j in range(k):
+            if (a ** (2**j * q)) % odd_integer == odd_integer - 1:
+                print("HI")
+                continue
+
+        return False
+
+    return True
+
+
+print(miller_rabin(11, 5))
