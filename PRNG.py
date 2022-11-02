@@ -1,6 +1,3 @@
-from unittest import result
-
-
 class BBS:
     def __init__(self, pq: int, seed: int):
         self.pq = pq
