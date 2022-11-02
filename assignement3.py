@@ -4,7 +4,16 @@ Simon Paquette
 CSI 4108
 Assignment 3
 """
+
 import random
+
+# https://pypi.org/project/cryptography/
+from cryptography.hazmat.primitives.asymmetric import rsa
+
+
+#!##################################################################
+#! Q1
+#!##################################################################
 
 
 class Elgamal:
@@ -57,6 +66,8 @@ class Elgamal:
         return M
 
 
+# print("\nQUESTION 1\n")
+
 # toy_version = Elgamal(prime_q=89, root=13)
 # toy_version.set_xa()
 # toy_version.set_k(37)
@@ -71,13 +82,20 @@ class Elgamal:
 # print("private key:", toy_version.get_private_key())
 
 
-def get_n_bit_number(n_bits: int):
-    number = random.randint(2 ** (n_bits - 1), (2**n_bits) - 1)
-    # print(f"{number:b}")
-    return number
+#!##################################################################
+#! Q2
+#!##################################################################
 
 
-def miller_rabin(odd_integer: int, confidence: int):
+def get_n_bit_odd_number(n_bits: int) -> tuple[int, str]:
+    number = 0
+    while number % 2 == 0:
+        number = random.randint(2 ** (n_bits - 1), (2**n_bits) - 1)
+        binary = f"{number:b}"
+    return (number, binary)
+
+
+def miller_rabin(odd_integer: int, confidence: int) -> bool:
 
     # Make sure odd integer and test>0
     assert odd_integer % 2 == 1
@@ -93,25 +111,56 @@ def miller_rabin(odd_integer: int, confidence: int):
 
     # Do t=confidence miller-rabin test
     for i in range(confidence):
-        print(i)
 
         # Select random integer a, 1 < a < n - 1
         a = random.randint(2, odd_integer - 2)
 
         # Test
+        inconclusive = False
 
         if (a**q) % odd_integer == 1:
-            print("HELLO")
+            inconclusive = True
             continue
 
         for j in range(k):
             if (a ** (2**j * q)) % odd_integer == odd_integer - 1:
-                print("HI")
-                continue
+                inconclusive = True
+                break
 
-        return False
+        if not inconclusive:
+            return False
 
     return True
 
 
-print(miller_rabin(11, 5))
+# print("\nQUESTION 2\n")
+# for _ in range(10):
+#     integer, binary = get_n_bit_odd_number(14)
+#     probable_prime = miller_rabin(integer, 5)
+#     print(f"Is {integer:<6} a probable prime? {probable_prime}")
+#     # The prob of error is < (1/4)^t = 0.09765625%
+
+
+#!##################################################################
+#! Q3
+#!##################################################################
+
+# * 3.a. https://cryptography.io/en/latest/hazmat/primitives/asymmetric/rsa/
+
+
+private_key = rsa.generate_private_key(public_exponent=65537, key_size=1024 * 2)
+private_numbers = private_key.private_numbers()
+key_size = private_key.key_size
+p = private_numbers.p
+q = private_numbers.q
+d = private_numbers.d
+dmp1 = private_numbers.dmp1
+dmq1 = private_numbers.dmq1
+iqmp = private_numbers.iqmp
+public_key = private_key.public_key()
+public_numbers = public_key.public_numbers()
+n = public_numbers.n
+e = public_numbers.e
+
+
+# *  3.b. https://cryptography.io/en/latest/hazmat/primitives/asymmetric/ec/
