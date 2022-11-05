@@ -1,7 +1,9 @@
 import math
 
 from arithmetic import NumeralArithmetic, PolynomialArithmetic
+from cipher import caesar, vigenere, xor
 from finite_field import FiniteField
+from PRNG import BBS, LCG
 from utils import (
     discrete_log,
     is_prime,
@@ -10,8 +12,6 @@ from utils import (
     prime_factors,
     primitive_roots,
 )
-from cipher import xor, caesar, vigenere
-from PRNG import BBS, LCG
 
 #!##################################################################
 #! FINITE FIELD
