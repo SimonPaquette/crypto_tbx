@@ -4,35 +4,6 @@ from arithmetic import NumeralArithmetic
 from utils import phi
 
 
-def fast_modular_expo(exponent: int, value: int = None, mod: int = None) -> None:
-    expos = f"{exponent:b}"
-
-    n_multiplications = 0
-    for expo in expos:
-        if expo == "0":
-            n_multiplications += 1
-        elif expo == "1":
-            n_multiplications += 2
-
-    print("n_multiplications:", n_multiplications)
-
-    if value is not None and mod is None:
-        f = 1
-        for expo in expos:
-            f = f * f
-            if expo == "1":
-                f = f * value
-        print("result:", f)
-
-    if value is not None and mod is not None:
-        f = 1
-        for expo in expos:
-            f = (f * f) % mod
-            if expo == "1":
-                f = (f * value) * mod
-        print("result:", f)
-
-
 class RSA:
     def __init__(
         self,
@@ -92,6 +63,7 @@ class RSA:
 
     def set_keys(self, public_key: int):
         self.public_key_e = public_key
+        self._valid_public_key_e()
         self.private_key_d = NumeralArithmetic.find_inverse(
             self.public_key_e, self.phi, False
         )
@@ -105,7 +77,7 @@ class RSA:
         self._valid_public_key_e()
         self._valid_pq()
 
-        c = (message**self.public_key_e) % self.pq
+        c = pow(base=message, exp=self.public_key_e, mod=self.pq)
         return c
 
     def decrypt(self, ciphertext: int) -> int:
@@ -113,17 +85,24 @@ class RSA:
         self._valid_private_key_d()
         self._valid_pq()
 
-        m = (ciphertext**self.private_key_d) % self.pq
+        m = pow(base=ciphertext, exp=self.private_key_d, mod=self.pq)
         return m
 
+    def decrypt_CRT(self, ciphertext: int) -> None:
+        vp = pow(ciphertext, self.private_key_d % (self.prime_p - 1), self.prime_p)
+        vq = pow(ciphertext, self.private_key_d % (self.prime_q - 1), self.prime_q)
+        xp = self.prime_q * pow(self.prime_q, -1, self.prime_p)
+        xq = self.prime_p * pow(self.prime_p, -1, self.prime_q)
+        plaintext = (vp * xp + vq * xq) % self.pq
 
-rsa = RSA(prime_p=17, prime_q=11, public_key_e=7, private_key_d=23)
-
-rsa = RSA(prime_p=7, prime_q=997)
-rsa.set_keys(5971)
-c = rsa.encrypt(88)
-m = rsa.decrypt(c)
-print(c)
-print(m)
-
-print(rsa)
+        print(
+            f"vp = c^(d mod p-1) mod p = {ciphertext}^({self.private_key_d} mod {self.prime_p-1}) mod {self.prime_p} = {vp}"
+        )
+        print(
+            f"vq = c^(d mod q-1) mod q = {ciphertext}^({self.private_key_d} mod {self.prime_q-1}) mod {self.prime_q} = {vq}"
+        )
+        print(f"xp = q * q^-1 mod p = {xp}")
+        print(f"xq = p * p^-1 mod q = {xq}")
+        print(
+            f"Plaintext = (vp*xp + vq*xq) mod n = ({vp}*{xp} + {vq}*{xq}) mod {self.pq} = {plaintext}"
+        )

@@ -4,9 +4,12 @@ from arithmetic import NumeralArithmetic, PolynomialArithmetic
 from cipher import caesar, vigenere, xor
 from finite_field import FiniteField
 from PRNG import BBS, LCG
+from public_key import RSA
 from utils import (
     discrete_log,
+    get_n_bit_odd_number,
     is_prime,
+    miller_rabin,
     n_test_miller_rabin,
     phi,
     prime_factors,
@@ -40,6 +43,10 @@ from utils import (
 # print(phi(91))
 # print(n_test_miller_rabin(500))
 # print(discrete_log(2, 13, 17))
+
+# integer, binary = get_n_bit_odd_number(14)
+# probable_prime = miller_rabin(integer, 5)
+# print(integer, probable_prime)
 
 # ? Polynomial operator
 # FIELD = 2
@@ -100,3 +107,21 @@ from utils import (
 # ? Linear Congruential Generator
 # gen = LCG(7, 0, 32, 5)
 # gen.generate(10)
+
+
+#!##################################################################
+#! Public Key
+#!##################################################################
+
+# ? RSA
+# rsa = RSA(prime_p=17, prime_q=11, public_key_e=7, private_key_d=23)
+# c = rsa.encrypt(88)
+# rsa.decrypt_CRT(c)
+
+# rsa = RSA(prime_p=7, prime_q=997)
+# rsa.set_keys(5971)
+# c = rsa.encrypt(88)
+# m = rsa.decrypt(c)
+# print(c)
+# print(m)
+# print(rsa)

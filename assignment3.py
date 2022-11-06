@@ -132,7 +132,7 @@ class Elgamal:
 
 
 toy_version = Elgamal(prime_q=89, root=13)
-toy_version.set_xa(5)
+toy_version.set_xa()
 toy_version.set_k(37)
 
 m1 = 56

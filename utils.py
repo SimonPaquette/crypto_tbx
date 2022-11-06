@@ -1,4 +1,5 @@
 import math
+import random
 
 import numpy as np
 import pandas as pd
@@ -83,6 +84,71 @@ def primitive_roots(modulo: int) -> None:
             pass
 
     print(f"\nThere is {len(roots)} Primitve roots of {modulo}: {roots}")
+
+
+def get_n_bit_odd_number(n_bits: int) -> tuple[int, str]:
+    """
+    Get a random odd number of lenght n bits
+
+    Args:
+        n_bits (int): lenght of the integer
+
+    Returns:
+        tuple[int, str]: a random number in the format (DEC, BIN)
+    """
+    number = 0
+    while number % 2 == 0:
+        number = random.randint(2 ** (n_bits - 1), (2**n_bits) - 1)
+        binary = f"{number:b}"
+    return (number, binary)
+
+
+def miller_rabin(odd_integer: int, confidence: int) -> bool:
+    """
+    Miller-Rabin probabilistic primality testing algorithm
+
+    Args:
+        odd_integer (int): a number to test if it is prime
+        confidence (int): run the test t times
+
+    Returns:
+        bool: odd_integer is a prime
+    """
+
+    # Make sure odd integer and test>0
+    assert odd_integer % 2 == 1
+    assert confidence > 0
+
+    # Find k and q with k>=0 and q odd where n - 1 = (2^k) * (q)
+    k = 0
+    reduction = odd_integer - 1
+    while reduction % 2 == 0:
+        reduction /= 2
+        k += 1
+    q = (odd_integer - 1) // (2**k)
+
+    # Do t=confidence miller-rabin test
+    for _ in range(confidence):
+
+        # Select random integer a, 1 < a < n - 1
+        a = random.randint(2, odd_integer - 2)
+
+        # Test
+        inconclusive = False
+
+        if pow(base=a, exp=q, mod=odd_integer) == 1:
+            inconclusive = True
+            continue
+
+        for j in range(k):
+            if (a ** (2**j * q)) % odd_integer == odd_integer - 1:
+                inconclusive = True
+                break
+
+        if not inconclusive:
+            return False
+
+    return True
 
 
 def n_test_miller_rabin(bits: int) -> int:
