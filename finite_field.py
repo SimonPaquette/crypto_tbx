@@ -1,3 +1,7 @@
+from arithmetic import PolynomialArithmetic
+from utils import _bin, _dec
+
+
 class FiniteField:
     def __init__(self, elems: list, mod: int = None):
         self.elems = elems

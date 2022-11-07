@@ -106,3 +106,56 @@ class RSA:
         print(
             f"Plaintext = (vp*xp + vq*xq) mod n = ({vp}*{xp} + {vq}*{xq}) mod {self.pq} = {plaintext}"
         )
+
+
+class ECC:
+    def __init__(self, prime: int, a: int, b: int):
+        self.prime = prime
+        self.a = a
+        self.b = b
+
+    def is_point(self, x, y):
+        raise NotImplementedError
+
+    def list_point(self) -> list[tuple[int, int]]:
+        points = []
+        for x in range(self.prime):
+            for y in range(self.prime):
+                if self.is_point(x, y):
+                    points.append((x, y))
+        return points
+
+
+class ECC_GFP(ECC):
+    def get_equation(self) -> str:
+        return f"( y^2 = x^3 + {self.a}x + {self.b} ) mod {self.prime}"
+
+    def is_point(self, x: int, y: int) -> bool:
+        left = pow(y, 2, self.prime)
+        right = (x**3 + self.a * x + self.b) % self.prime
+        return left == right
+
+    def negative_point(self, x: int, y: int) -> tuple[int, int]:
+        return (x, (-y) % self.prime)
+
+    def double_point(self, x: int, y: int) -> tuple[int, int]:
+        slope = ((3 * x**2 + self.a) * (pow(2 * y, -1, self.prime))) % self.prime
+        xr = (slope**2 - 2 * x) % self.prime
+        yr = (slope * (x - xr) - y) % self.prime
+        return (xr, yr)
+
+    def addition(self, xp: int, yp: int, xq: int, yq: int) -> tuple[int, int]:
+        slope = (((yq - yp) % self.prime) * (pow(xq - xp, -1, self.prime))) % self.prime
+        xr = (slope**2 - xp - xq) % self.prime
+        yr = (-yp + slope * (xp - xr)) % self.prime
+        return (xr, yr)
+
+
+class ECC_GF2(ECC):
+    def get_equation(self) -> str:
+        return f"( y^2 + xy = x^3 + {self.a}x^2 + {self.b} ) mod {self.prime}"
+
+    def is_point(self, x: int, y: int) -> bool:
+        left = (y**2 + x * y) % self.prime
+        right = (x**3 + self.a * x**2 + self.b) % self.prime
+        return left == right
