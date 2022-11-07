@@ -44,7 +44,11 @@ class Elgamal:
         Returns:
             str: object description
         """
-        return str(vars(self))
+        txt = f"System Parameters:\n"
+        txt += f" - Public Key: (q={self.prime_q}, root={self.root}, Ya={self.ya})\n"
+        txt += f" - Private Key: (Xa={self.xa})\n"
+        txt += f" - Random One-Time Key: (k={self.k}, K={self.K})\n"
+        return txt
 
     def set_xa(self, xa: int = None) -> None:
         """
@@ -131,13 +135,20 @@ class Elgamal:
         return M
 
 
-toy_version = Elgamal(prime_q=89, root=13)
+q = 89
+root = 13
+k = 37
+toy_version = Elgamal(prime_q=q, root=root)
 toy_version.set_xa()
-toy_version.set_k(37)
+toy_version.set_k(k)
 
 m1 = 56
 c1 = toy_version.encrypt(m1)
 p1 = toy_version.decrypt(c1)
+
+m2 = 32
+c2 = toy_version.encrypt(m2)
+p2 = pow(base=c1[1], exp=-1, mod=q) * c2[1] * m1 % q
 
 
 # Show Result
@@ -147,11 +158,15 @@ print("QUESTION 1")
 print("----------")
 print()
 print(toy_version)
-print("Input message:", m1)
-print("cipher:", c1)
-print("Output plaintext:", p1)
-print("public key:", toy_version.get_public_key())
-print("private key:", toy_version.get_private_key())
+print("Input message1:", m1)
+print("Cipher1:", c1)
+print("Output plaintext1:", p1)
+print()
+print("From Cipher2:", c2)
+print(
+    f"Compute Plaintext2={m2} knowing the encryption used the same k=37 : ({pow(base=c1[1], exp=-1, mod=q)}*{c2[1]}*{m1})%{q} = {p2}"
+)
+print()
 
 
 #!##################################################################
