@@ -309,13 +309,13 @@ RSA_LIB_DECRYPT_END = time.perf_counter()
 RSA_LIB_DECRYPT_TIME = RSA_LIB_DECRYPT_END - RSA_LIB_DECRYPT_START
 
 # Decryption using CRT
-RSA_MAN_CRT_DECRYPT_START = time.time()
+RSA_MAN_CRT_DECRYPT_START = time.perf_counter()
 vp = pow(ciphertext_int, d % (p - 1), p)
 vq = pow(ciphertext_int, d % (q - 1), q)
 xp = q * pow(q, -1, p)
 xq = p * pow(p, -1, q)
 plaintext_int_crt = (vp * xp + vq * xq) % n
-RSA_MAN_CRT_DECRYPT_END = time.time()
+RSA_MAN_CRT_DECRYPT_END = time.perf_counter()
 RSA_MAN_CRT_DECRYPT_TIME = RSA_MAN_CRT_DECRYPT_END - RSA_MAN_CRT_DECRYPT_START
 
 # Decryption using algo seen in class
