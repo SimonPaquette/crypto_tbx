@@ -4,7 +4,7 @@ from arithmetic import NumeralArithmetic, PolynomialArithmetic
 from cipher import caesar, vigenere, xor
 from finite_field import FiniteField
 from PRNG import BBS, LCG
-from public_key import ECC_GF2, ECC_GFP, RSA
+from public_key import ECC, RSA, ECurve_GF2, ECurve_GFP
 from utils import (
     discrete_log,
     get_n_bit_odd_number,
@@ -128,15 +128,16 @@ from utils import (
 
 
 # ? ECC
-# gfp = ECC_GFP(23, 1, 1)
+# gfp = ECurve_GFP(23, 1, 1)
 # print(gfp.get_equation())
 # print(gfp.is_point(9, 7))
 # print(gfp.list_point())
 # print(gfp.negative_point(9, 7))
 # print(gfp.addition(3, 10, 9, 7))
 # print(gfp.double_point(3, 10))
+# print(gfp.multiplication(3, 9, 7))
 
-# gf2 = ECC_GF2(4, 1, 1)
+# gf2 = ECurve_GF2(4, 1, 1)
 # print(gf2.get_equation())
 # print(gf2.is_point(1, 6))
 # print(gf2.list_point())

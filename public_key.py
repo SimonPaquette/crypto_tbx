@@ -108,7 +108,7 @@ class RSA:
         )
 
 
-class ECC:
+class ECurve:
     def __init__(self, prime: int, a: int, b: int):
         self.prime = prime
         self.a = a
@@ -126,7 +126,7 @@ class ECC:
         return points
 
 
-class ECC_GFP(ECC):
+class ECurve_GFP(ECurve):
     def get_equation(self) -> str:
         return f"( y^2 = x^3 + {self.a}x + {self.b} ) mod {self.prime}"
 
@@ -150,8 +150,45 @@ class ECC_GFP(ECC):
         yr = (-yp + slope * (xp - xr)) % self.prime
         return (xr, yr)
 
+    def multiplication(self, integer: int, x: int, y: int) -> tuple[int, int]:
+        assert integer > 1
+        temp_x, temp_y = self.double_point(x, y)
+        for _ in range(integer - 2):
+            temp_x, temp_y = self.addition(temp_x, temp_y, x, y)
+        return (temp_x, temp_y)
 
-class ECC_GF2(ECC):
+    def substraction(self):
+        raise NotImplementedError
+
+
+class ECC:
+    def __init__(self, curve: ECurve_GFP, x: int, y: int, private_key: int):
+        assert curve.is_point(x, y)
+        self.curve = curve
+        self.x = x
+        self.y = y
+        self.private_key = private_key
+        self.public_key = self._set_public_key()
+
+    def _set_public_key(self) -> tuple[int, int]:
+        return self.curve.multiplication(self.private_key, self.x, self.y)
+
+    def get_public_key(self) -> tuple[int, int]:
+        return self.public_key
+
+    def encrypt(self, k: int, message: tuple[int, int]) -> tuple[int, int]:
+        assert self.curve.is_point(message[0], message[1])
+        part1 = self.curve.multiplication(k, self.x, self.y)
+        part2 = self.curve.multiplication(k, self.public_key[0], self.public_key[1])
+        part2 = self.curve.addition(message[0], message[1], part2[0], part2[1])
+        return (part1, part2)
+
+    def decrypt(self):
+        raise NotImplementedError
+
+
+class ECurve_GF2(ECurve):
+    # TODO: add function similar to class ECurve_GFP
     def get_equation(self) -> str:
         return f"( y^2 + xy = x^3 + {self.a}x^2 + {self.b} ) mod {self.prime}"
 
@@ -159,3 +196,12 @@ class ECC_GF2(ECC):
         left = (y**2 + x * y) % self.prime
         right = (x**3 + self.a * x**2 + self.b) % self.prime
         return left == right
+
+
+# TODO: ECC.decrypt() need ECurve_GFP.substration()
+# gfp = ECurve_GFP(23, 1, 1)
+# point = gfp.list_point()[3]
+# ecc = ECC(gfp, point[0], point[1], 5)
+# message = gfp.list_point()[8]
+# cipher = ecc.encrypt(7, message)
+# print(cipher)
