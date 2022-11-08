@@ -3,6 +3,11 @@ Simon Paquette
 300044038
 CSI 4108
 Assignment 3
+
+Before executing the python file, need to install the Cryptography library (https://pypi.org/project/cryptography/):
+    pip install cryptography
+    or
+    conda install cryptography
 """
 
 
@@ -146,7 +151,7 @@ m1 = 56
 c1 = toy_version.encrypt(m1)
 p1 = toy_version.decrypt(c1)
 
-m2 = 32
+m2 = 32  # Assumption
 c2 = toy_version.encrypt(m2)
 p2 = pow(base=c1[1], exp=-1, mod=q) * c2[1] * m1 % q
 
