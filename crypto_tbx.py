@@ -40,7 +40,7 @@ from utils import (
 # print(is_prime(11))
 # print(prime_factors(30))
 # print(math.gcd(3, 6))
-# print(phi(91))
+# print(phi(65))
 # print(n_test_miller_rabin(500))
 # print(discrete_log(2, 13, 17))
 
@@ -66,7 +66,7 @@ from utils import (
 # PolynomialArithmetic.div_pipeline(FIELD, POLY1, POLY2)
 
 # ? Inverse
-# print(NumeralArithmetic.find_inverse(1234, 4231))
+# print(NumeralArithmetic.find_inverse(7, 48))
 
 # ? Chinese remainder
 # NumeralArithmetic.chinese_remainder(2431)
