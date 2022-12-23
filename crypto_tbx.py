@@ -1,10 +1,14 @@
+"""
+Sandbox to test all the cryptographic implementation function
+"""
+
 import math
 
 from arithmetic import NumeralArithmetic, PolynomialArithmetic
-from cipher import caesar, vigenere, xor
 from finite_field import FiniteField
 from PRNG import BBS, LCG
 from public_key import ECC, RSA, ECurve_GF2, ECurve_GFP
+from stream_cipher import caesar, vigenere, xor
 from utils import (
     discrete_log,
     get_n_bit_odd_number,
@@ -89,7 +93,7 @@ from utils import (
 
 # ? SPN - Sbox - linear - differential
 # * check ldc_tut.py for SPN implementation
-# * use sagemath for sbox analysis
+# * You will need to use sagemath software for sbox analysis
 # from sage.crypto.sbox import SBox
 # S = SBox(10,2,4,9,0,14,15,1,7,6,3,13,11,8,12,5)
 # S.linear_approximation_table()

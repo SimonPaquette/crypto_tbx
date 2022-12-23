@@ -1,3 +1,10 @@
+"""
+Constraint and requirements of finite field theory
+
+# TODO: implementation of modulo in each test
+"""
+
+
 from arithmetic import PolynomialArithmetic
 from utils import _bin, _dec
 

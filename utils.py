@@ -1,3 +1,7 @@
+"""
+Some mathematical functions useful to implements cryptographic algorithms
+"""
+
 import math
 import random
 
@@ -6,14 +10,42 @@ import pandas as pd
 
 
 def _bin(dec_val: int, length: int) -> str:
+    """
+    convert a decimal value to a binary
+
+    Args:
+        dec_val (int): decimal value
+        length (int): number of minimal bits to represent the value
+
+    Returns:
+        str: binary value of at least {length} bits
+    """
     return format(dec_val, f"0{length}b")
 
 
 def _dec(bin_val: str) -> int:
+    """
+    convert a binary value to a decimal
+
+    Args:
+        bin_val (str): binary value
+
+    Returns:
+        int: decimal value
+    """
     return int(bin_val, 2)
 
 
 def is_prime(n: int) -> bool:
+    """
+    test if a number is prime. use a deterministic method.
+
+    Args:
+        n (int): integer to do primality test
+
+    Returns:
+        bool: n is a prime
+    """
     assert n > 1
     for i in range(2, int(math.sqrt(n)) + 1):
         if n % i == 0:
@@ -22,6 +54,15 @@ def is_prime(n: int) -> bool:
 
 
 def prime_factors(n: int) -> list:
+    """
+    get all the prime numbers of a composite number
+
+    Args:
+        n (int): an integer
+
+    Returns:
+        list: all the prime factors
+    """
 
     factors = []
     while n % 2 == 0:
@@ -37,6 +78,15 @@ def prime_factors(n: int) -> list:
 
 
 def phi(n: int) -> int:
+    """
+    euler totient function
+
+    Args:
+        n (int): an integer
+
+    Returns:
+        int: phi of a number
+    """
     if is_prime(n):
         return n - 1
     primes = prime_factors(n)
@@ -51,6 +101,12 @@ def phi(n: int) -> int:
 
 
 def print_all(df: pd.DataFrame) -> None:
+    """
+    a function to print all row/col of a dataframe when the size is bigger than pandas default value
+
+    Args:
+        df (pd.DataFrame): any printable dataframe
+    """
     pd.set_option("display.max_rows", None)
     pd.set_option("display.max_columns", None)
     print(df)
@@ -59,6 +115,12 @@ def print_all(df: pd.DataFrame) -> None:
 
 
 def primitive_roots(modulo: int) -> None:
+    """
+    get the primitive root modulo n
+
+    Args:
+        modulo (int): mod
+    """
 
     data = {"a": list(range(1, modulo))}
     for power in range(2, modulo):
@@ -156,6 +218,17 @@ def n_test_miller_rabin(bits: int) -> int:
 
 
 def discrete_log(base: int, value: int, modulo: int):
+    """
+    calculate the discrete log
+
+    Args:
+        base (int): log base
+        value (int): val
+        modulo (int): mod
+
+    Returns:
+        _type_: _description_
+    """
     N = None
     if not N:
         N = 1 + int(math.sqrt(modulo))
